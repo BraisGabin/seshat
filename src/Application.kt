@@ -1,12 +1,18 @@
 package com.braisgabin.seshat
 
+import com.ryanharter.ktor.moshi.moshi
+import com.squareup.moshi.Moshi
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.CallLogging
+import io.ktor.features.ContentNegotiation
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.request.path
+import io.ktor.request.receive
 import io.ktor.request.receiveChannel
+import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.post
 import io.ktor.routing.route
@@ -26,9 +32,15 @@ fun Application.module(testing: Boolean = false) {
         filter { call -> call.request.path().startsWith("/") }
     }
 
+    val moshi = Moshi.Builder().build()
+
+    install(ContentNegotiation) {
+        moshi(moshi)
+    }
+
     val githubAdapter = Retrofit.Builder()
         .baseUrl("https://api.github.com")
-        .addConverterFactory(MoshiConverterFactory.create())
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()
         .create<GithubAdapter>()
 
@@ -47,6 +59,12 @@ fun Application.module(testing: Boolean = false) {
                     githubService.createComment(owner, repo, pullNumber, commitId, it)
                 }
                 call.respondText(diff.toString(), contentType = ContentType.Text.Plain)
+            }
+        }
+        route("webhook") {
+            post("github") {
+                call.receive<GithubWebhookResponse>().repository
+                call.respond(HttpStatusCode.NoContent, "")
             }
         }
     }
