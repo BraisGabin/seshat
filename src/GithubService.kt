@@ -24,7 +24,7 @@ class GithubService(
 
 private fun PullRequestComment.toData(commitId: String): PrCommentBody {
     return PrCommentBody(
-        body = body,
+        body = "```suggestion\n$body```",
         commitId = commitId,
         path = path,
         startSide = if (start == end) null else start.side.toData(),

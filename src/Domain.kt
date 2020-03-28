@@ -27,7 +27,7 @@ fun parse(channel: ByteReadChannel): List<PullRequestComment> {
                 path = path,
                 start = Position(Side.RIGHT, start + first),
                 end = Position(Side.RIGHT, start + last),
-                body = "```suggestion\n$body\n```"
+                body = "$body\n"
             )
         }
 }
