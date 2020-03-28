@@ -1,12 +1,17 @@
 package com.braisgabin.seshat
 
-import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.request.*
-import io.ktor.features.*
-import org.slf4j.event.*
-import io.ktor.routing.*
-import io.ktor.http.*
+import io.ktor.application.Application
+import io.ktor.application.call
+import io.ktor.application.install
+import io.ktor.features.CallLogging
+import io.ktor.http.ContentType
+import io.ktor.request.path
+import io.ktor.request.receiveChannel
+import io.ktor.response.respondText
+import io.ktor.routing.post
+import io.ktor.routing.route
+import io.ktor.routing.routing
+import org.slf4j.event.Level
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -19,8 +24,12 @@ fun Application.module(testing: Boolean = false) {
     }
 
     routing {
-        get("/") {
-            call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
+        route("github") {
+            post("{user}/{repository}/pulls/{pr}") {
+                val diff = parse(call.receiveChannel())
+
+                call.respondText(diff.toString(), contentType = ContentType.Text.Plain)
+            }
         }
     }
 }
