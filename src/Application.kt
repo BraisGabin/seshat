@@ -18,9 +18,13 @@ import io.ktor.routing.post
 import io.ktor.routing.route
 import io.ktor.routing.routing
 import org.slf4j.event.Level
+import redis.clients.jedis.JedisPool
+import redis.clients.jedis.JedisPoolConfig
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
+import java.net.URI
+
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -37,6 +41,8 @@ fun Application.module(testing: Boolean = false) {
     install(ContentNegotiation) {
         moshi(moshi)
     }
+
+    val jedisPool = getPool()
 
     val githubAdapter = Retrofit.Builder()
         .baseUrl("https://api.github.com")
@@ -63,9 +69,25 @@ fun Application.module(testing: Boolean = false) {
         }
         route("webhook") {
             post("github") {
-                call.receive<GithubWebhookResponse>().repository
+                val webhookData = call.receive<GithubWebhookData>()
+                jedisPool.getResource().use { jedis ->
+                    jedis.set(webhookData.repository.fullName, webhookData.installation.id)
+                }
                 call.respond(HttpStatusCode.NoContent, "")
             }
         }
     }
+}
+
+private fun getPool(): JedisPool {
+    val redisURI = URI(System.getenv("REDIS_URL"))
+    val poolConfig = JedisPoolConfig().apply {
+        maxTotal = 10
+        maxIdle = 5
+        minIdle = 1
+        testOnBorrow = true
+        testOnReturn = true
+        testWhileIdle = true
+    }
+    return JedisPool(poolConfig, redisURI)
 }

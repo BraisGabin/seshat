@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-class GithubWebhookResponse(
+class GithubWebhookData(
     val repository: Repository,
     val installation: Installation
 )
