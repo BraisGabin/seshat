@@ -72,7 +72,7 @@ fun Application.module(testing: Boolean = false) {
             post("github") {
                 val webhookData = call.receive<GithubWebhookData>()
                 jedisPool.getResource().use { jedis ->
-                    jedis.set(webhookData.repository.fullName, webhookData.installation.id)
+                    jedis.set(webhookData.repository.fullName, webhookData.installation.id.toString())
                 }
                 call.respond(HttpStatusCode.NoContent, "")
             }

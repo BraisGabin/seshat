@@ -16,5 +16,5 @@ class Repository(
 
 @Serializable
 class Installation(
-    val id: String
+    val id: Long
 )
