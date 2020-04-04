@@ -1,7 +1,5 @@
 package com.braisgabin.seshat
 
-import com.ryanharter.ktor.moshi.moshi
-import com.squareup.moshi.Moshi
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -17,6 +15,9 @@ import io.ktor.response.respondText
 import io.ktor.routing.post
 import io.ktor.routing.route
 import io.ktor.routing.routing
+import io.ktor.serialization.json
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import org.slf4j.event.Level
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
@@ -36,17 +37,17 @@ fun Application.module(testing: Boolean = false) {
         filter { call -> call.request.path().startsWith("/") }
     }
 
-    val moshi = Moshi.Builder().build()
+    val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
 
     install(ContentNegotiation) {
-        moshi(moshi)
+        json(json = json)
     }
 
     val jedisPool = getPool()
 
     val githubAdapter = Retrofit.Builder()
         .baseUrl("https://api.github.com")
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
+        .addConverterFactory(MoshiConverterFactory.create())
         .build()
         .create<GithubAdapter>()
 

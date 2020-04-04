@@ -1,20 +1,20 @@
 package com.braisgabin.seshat
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 class GithubWebhookData(
     val repository: Repository,
     val installation: Installation
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 class Repository(
-    @Json(name = "full_name") val fullName: String
+    @SerialName("full_name") val fullName: String
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 class Installation(
     val id: String
 )
