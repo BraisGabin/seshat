@@ -19,15 +19,21 @@ interface GithubAdapter {
 
     @Headers("Accept: application/vnd.github.machine-man-preview+json")
     @POST("app/installations/{installation_id}/access_tokens")
-    suspend fun getOatuh(
+    suspend fun getInstallationOauth(
         @Header("Authorization") authorization: String,
-        @Path("installation_id") installationId: String
+        @Path("installation_id") installationId: String,
+        @Body body: InstallationOauthRequest
     ): Response<AccessTokenResponse>
 }
 
 @JsonClass(generateAdapter = true)
 data class AccessTokenResponse(
     val token: String
+)
+
+@JsonClass(generateAdapter = true)
+data class InstallationOauthRequest(
+    val permissions: Map<String, String>
 )
 
 @JsonClass(generateAdapter = true)
