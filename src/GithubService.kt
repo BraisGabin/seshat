@@ -25,7 +25,7 @@ class GithubService(
         installationId: String,
         jwt: String
     ): String {
-        val body = InstallationOauthRequest(permissions = mapOf("issues" to "write"))
+        val body = InstallationOauthRequest(permissions = mapOf("pull_requests" to "write"))
         return githubAdapter.getInstallationOauth("Bearer $jwt", installationId, body).body()!!.token
     }
 }
