@@ -1,20 +1,19 @@
 package com.braisgabin.seshat
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class GithubWebhookData(
-    val repository: Repository,
+class InstallationEvent(
     val installation: Installation
 )
 
 @Serializable
-class Repository(
-    @SerialName("full_name") val fullName: String
+class Installation(
+    val id: Long,
+    val account: Account
 )
 
 @Serializable
-class Installation(
-    val id: Long
+class Account(
+    val login: String
 )

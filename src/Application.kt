@@ -26,7 +26,6 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
 import java.net.URI
 
-
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @Suppress("unused") // Referenced in application.conf
@@ -70,9 +69,9 @@ fun Application.module(testing: Boolean = false) {
         }
         route("webhook") {
             post("github") {
-                val webhookData = call.receive<GithubWebhookData>()
+                val installation = call.receive<InstallationEvent>().installation
                 jedisPool.getResource().use { jedis ->
-                    jedis.set(webhookData.repository.fullName, webhookData.installation.id.toString())
+                    jedis.set(installation.account.login.toLowerCase(), installation.id.toString())
                 }
                 call.respond(HttpStatusCode.NoContent, "")
             }
