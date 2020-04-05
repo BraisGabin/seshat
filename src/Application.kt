@@ -20,6 +20,8 @@ import io.ktor.routing.routing
 import io.ktor.serialization.json
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.slf4j.event.Level
 import redis.clients.jedis.JedisPool
@@ -59,6 +61,13 @@ fun Application.module(testing: Boolean = false) {
 
     val githubAdapter = Retrofit.Builder()
         .baseUrl("https://api.github.com")
+        .client(
+            OkHttpClient.Builder()
+                .addNetworkInterceptor(HttpLoggingInterceptor().apply {
+                    setLevel(HttpLoggingInterceptor.Level.BODY)
+                })
+                .build()
+        )
         .addConverterFactory(MoshiConverterFactory.create())
         .build()
         .create<GithubAdapter>()
