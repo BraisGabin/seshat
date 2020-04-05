@@ -89,7 +89,7 @@ fun Application.module(testing: Boolean = false) {
                 val commitId: String = call.parameters["commit_id"]!!
 
                 val installationId: String = jedisPool.getResource().use { jedis ->
-                    jedis.get(owner)
+                    jedis.get(owner.toLowerCase())
                 }
                 val oauthToken = githubService.getOauthToken(installationId, simpleJWT.sign(githubAppId))
                 diff.forEach {
