@@ -50,7 +50,8 @@ fun Application.module(testing: Boolean = false) {
         .build()
         .create<GithubAdapter>()
 
-    val githubService = GithubService(githubAdapter, environment.config.property("ktor.github.token").getString())
+    val oauthToken = environment.config.property("ktor.github.token").getString()
+    val githubService = GithubService(githubAdapter)
 
     routing {
         route("github") {
@@ -62,7 +63,7 @@ fun Application.module(testing: Boolean = false) {
                 val pullNumber: String = call.parameters["pull_number"]!!
                 val commitId: String = call.parameters["commit_id"]!!
                 diff.forEach {
-                    githubService.createComment(owner, repo, pullNumber, commitId, it)
+                    githubService.createComment(owner, repo, pullNumber, commitId, it, oauthToken)
                 }
                 call.respondText(diff.toString(), contentType = ContentType.Text.Plain)
             }

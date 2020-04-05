@@ -1,8 +1,7 @@
 package com.braisgabin.seshat
 
 class GithubService(
-    private val githubAdapter: GithubAdapter,
-    private val oauthToken: String
+    private val githubAdapter: GithubAdapter
 ) {
 
     suspend fun createComment(
@@ -10,7 +9,8 @@ class GithubService(
         repo: String,
         pullNumber: String,
         commitId: String,
-        comment: PullRequestComment
+        comment: PullRequestComment,
+        oauthToken: String
     ): Boolean {
         return githubAdapter.addComment(
             authorization = "token $oauthToken",
