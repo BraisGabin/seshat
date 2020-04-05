@@ -20,6 +20,13 @@ class GithubService(
             body = comment.toData(commitId)
         ).isSuccessful
     }
+
+    suspend fun getOauthToken(
+        installationId: String,
+        jwt: String
+    ): String {
+        return githubAdapter.getOatuh("Bearer $jwt", installationId).body()!!.token
+    }
 }
 
 private fun PullRequestComment.toData(commitId: String): PrCommentBody {
