@@ -81,7 +81,7 @@ fun Application.module(testing: Boolean = false) {
     routing {
         route("github") {
             post("{owner}/{repo}/pulls/{pull_number}/{commit_id}") {
-                val diff = parse(call.receiveChannel())
+                val diff = diffParser(call.receiveChannel())
 
                 val owner: String = call.parameters["owner"]!!
                 val repo: String = call.parameters["repo"]!!

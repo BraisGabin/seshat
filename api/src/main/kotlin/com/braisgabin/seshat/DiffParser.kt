@@ -10,7 +10,7 @@ import io.reflectoring.diffparser.api.model.Diff
 import io.reflectoring.diffparser.api.model.Line
 import java.io.InputStream
 
-fun parse(channel: ByteReadChannel): List<Suggestion> {
+fun diffParser(channel: ByteReadChannel): List<Suggestion> {
     return parseDiff(channel.toInputStream())
         .flatMap { diff ->
             diff.hunks.map { hunk -> diff.toFileName.substring(2) to hunk }
