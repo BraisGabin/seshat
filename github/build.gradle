@@ -15,6 +15,7 @@ dependencies {
     implementation "com.squareup.moshi:moshi-kotlin"
     kapt "com.squareup.moshi:moshi-kotlin-codegen"
     implementation "com.squareup.okhttp3:okhttp"
+    implementation "com.auth0:java-jwt"
 
     implementation 'com.google.dagger:dagger'
     kapt 'com.google.dagger:dagger-compiler'
