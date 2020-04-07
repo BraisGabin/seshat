@@ -1,1 +1,1 @@
-web: build/install/seshat/bin/seshat
+web: api/build/install/api/bin/api
