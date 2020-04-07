@@ -1,6 +1,5 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
-    id 'org.jetbrains.kotlin.kapt'
     id 'org.jetbrains.kotlin.plugin.serialization'
     id 'application'
 }
@@ -11,22 +10,18 @@ application {
 
 dependencies {
     implementation platform(project(':bom'))
-    kapt platform(project(':bom'))
 
     implementation project(':entities')
+    implementation project(':github')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "io.ktor:ktor-server-netty"
     implementation "ch.qos.logback:logback-classic"
     implementation "io.ktor:ktor-server-core"
     implementation "io.reflectoring.diffparser:diffparser"
-    implementation "com.squareup.retrofit2:retrofit"
-    implementation "com.squareup.retrofit2:converter-moshi"
     implementation "io.ktor:ktor-serialization"
     implementation "org.bouncycastle:bcprov-jdk15on"
     implementation "com.auth0:java-jwt"
     implementation "redis.clients:jedis"
-    implementation "com.squareup.moshi:moshi-kotlin"
-    kapt "com.squareup.moshi:moshi-kotlin-codegen"
-    implementation "com.squareup.okhttp3:logging-interceptor"
+    implementation "com.squareup.okhttp3:okhttp"
     testImplementation "io.ktor:ktor-server-tests"
 }

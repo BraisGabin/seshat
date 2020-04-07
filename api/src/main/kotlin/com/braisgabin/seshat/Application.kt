@@ -2,6 +2,7 @@ package com.braisgabin.seshat
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.braisgabin.seshat.github.DaggerGithubComponent
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -21,14 +22,10 @@ import io.ktor.serialization.json
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.slf4j.event.Level
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.create
 import java.net.URI
 import java.security.KeyFactory
 import java.security.Security
@@ -59,20 +56,7 @@ fun Application.module(testing: Boolean = false) {
 
     val jedisPool = getPool(environment.config.property("ktor.redis.url").getString())
 
-    val githubAdapter = Retrofit.Builder()
-        .baseUrl("https://api.github.com")
-        .client(
-            OkHttpClient.Builder()
-                .addNetworkInterceptor(HttpLoggingInterceptor().apply {
-                    setLevel(HttpLoggingInterceptor.Level.BODY)
-                })
-                .build()
-        )
-        .addConverterFactory(MoshiConverterFactory.create())
-        .build()
-        .create<GithubAdapter>()
-
-    val githubService = GithubService(githubAdapter)
+    val githubService = DaggerGithubComponent.factory().create(OkHttpClient()).githubService()
 
     val githubAppId = environment.config.property("ktor.github.app.id").getString()
     val githubAppPem = environment.config.property("ktor.github.app.pem").getString()

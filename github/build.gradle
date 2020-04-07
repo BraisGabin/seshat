@@ -1,0 +1,21 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+    id 'org.jetbrains.kotlin.kapt'
+    id 'java-library'
+}
+
+dependencies {
+    implementation platform(project(':bom'))
+    kapt platform(project(':bom'))
+
+    implementation project(':entities')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "com.squareup.retrofit2:retrofit"
+    implementation "com.squareup.retrofit2:converter-moshi"
+    implementation "com.squareup.moshi:moshi-kotlin"
+    kapt "com.squareup.moshi:moshi-kotlin-codegen"
+    implementation "com.squareup.okhttp3:okhttp"
+
+    implementation 'com.google.dagger:dagger'
+    kapt 'com.google.dagger:dagger-compiler'
+}

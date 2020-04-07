@@ -1,11 +1,11 @@
-package com.braisgabin.seshat
+package com.braisgabin.seshat.github
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import retrofit2.Response
 import retrofit2.http.*
 
-interface GithubAdapter {
+internal interface GithubAdapter {
 
     @Headers("Accept: application/vnd.github.comfort-fade-preview+json")
     @POST("repos/{owner}/{repo}/pulls/{pull_number}/comments")
@@ -27,17 +27,17 @@ interface GithubAdapter {
 }
 
 @JsonClass(generateAdapter = true)
-data class AccessTokenResponse(
+internal data class AccessTokenResponse(
     val token: String
 )
 
 @JsonClass(generateAdapter = true)
-data class InstallationOauthRequest(
+internal data class InstallationOauthRequest(
     val permissions: Map<String, String>
 )
 
 @JsonClass(generateAdapter = true)
-data class PrCommentBody(
+internal data class PrCommentBody(
     val body: String,
     @Json(name = "commit_id") val commitId: String,
     val path: String,

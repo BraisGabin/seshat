@@ -20,5 +20,8 @@ dependencies {
         api("redis.clients:jedis:3.2.0")
         api("com.squareup.moshi:moshi-kotlin:1.9.2")
         api("com.squareup.moshi:moshi-kotlin-codegen:1.9.2")
+        api("com.google.dagger:dagger:2.27")
+        api("com.google.dagger:dagger:2.27")
+        api("com.google.dagger:dagger-compiler:2.27")
     }
 }

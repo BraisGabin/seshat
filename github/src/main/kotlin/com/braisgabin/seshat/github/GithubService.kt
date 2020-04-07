@@ -1,9 +1,10 @@
-package com.braisgabin.seshat
+package com.braisgabin.seshat.github
 
 import com.braisgabin.seshat.entities.Side
 import com.braisgabin.seshat.entities.Suggestion
+import javax.inject.Inject
 
-class GithubService(
+class GithubService @Inject internal constructor(
     private val githubAdapter: GithubAdapter
 ) {
 
