@@ -57,7 +57,7 @@ fun Application.module(testing: Boolean = false) {
         json(json = json)
     }
 
-    val jedisPool = getPool()
+    val jedisPool = getPool(environment.config.property("ktor.redis.url").getString())
 
     val githubAdapter = Retrofit.Builder()
         .baseUrl("https://api.github.com")
@@ -110,8 +110,8 @@ fun Application.module(testing: Boolean = false) {
     }
 }
 
-private fun getPool(): JedisPool {
-    val redisURI = URI(System.getenv("REDIS_URL"))
+private fun getPool(url: String): JedisPool {
+    val redisURI = URI(url)
     val poolConfig = JedisPoolConfig().apply {
         maxTotal = 10
         maxIdle = 5
