@@ -1,5 +1,8 @@
 package com.braisgabin.seshat
 
+import com.braisgabin.seshat.entities.Position
+import com.braisgabin.seshat.entities.Side
+import com.braisgabin.seshat.entities.Suggestion
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.jvm.javaio.toInputStream
 import io.reflectoring.diffparser.api.UnifiedDiffParser
@@ -7,7 +10,7 @@ import io.reflectoring.diffparser.api.model.Diff
 import io.reflectoring.diffparser.api.model.Line
 import java.io.InputStream
 
-fun parse(channel: ByteReadChannel): List<PullRequestComment> {
+fun parse(channel: ByteReadChannel): List<Suggestion> {
     return parseDiff(channel.toInputStream())
         .flatMap { diff ->
             diff.hunks.map { hunk -> diff.toFileName.substring(2) to hunk }
@@ -23,11 +26,11 @@ fun parse(channel: ByteReadChannel): List<PullRequestComment> {
                 .dropWhile { line -> line.lineType != Line.LineType.TO }
                 .dropLastWhile { line -> line.lineType != Line.LineType.TO }
                 .joinToString("\n") { line -> line.content }
-            PullRequestComment(
+            Suggestion(
                 path = path,
                 start = Position(Side.RIGHT, start + first),
                 end = Position(Side.RIGHT, start + last),
-                body = "$body\n"
+                code = "$body\n"
             )
         }
 }
@@ -39,17 +42,3 @@ private fun parseDiff(inputStream: InputStream): List<Diff> {
     }
     return diff!!
 }
-
-data class PullRequestComment(
-    val path: String,
-    val start: Position,
-    val end: Position,
-    val body: String
-)
-
-data class Position(
-    val side: Side,
-    val line: Int
-)
-
-enum class Side { LEFT, RIGHT }

@@ -1,5 +1,8 @@
 package com.braisgabin.seshat
 
+import com.braisgabin.seshat.entities.Side
+import com.braisgabin.seshat.entities.Suggestion
+
 class GithubService(
     private val githubAdapter: GithubAdapter
 ) {
@@ -9,7 +12,7 @@ class GithubService(
         repo: String,
         pullNumber: String,
         commitId: String,
-        comment: PullRequestComment,
+        comment: Suggestion,
         oauthToken: String
     ): Boolean {
         return githubAdapter.addComment(
@@ -30,9 +33,9 @@ class GithubService(
     }
 }
 
-private fun PullRequestComment.toData(commitId: String): PrCommentBody {
+private fun Suggestion.toData(commitId: String): PrCommentBody {
     return PrCommentBody(
-        body = "```suggestion\n$body```",
+        body = "```suggestion\n$code```",
         commitId = commitId,
         path = path,
         startSide = if (start == end) null else start.side.toData(),
