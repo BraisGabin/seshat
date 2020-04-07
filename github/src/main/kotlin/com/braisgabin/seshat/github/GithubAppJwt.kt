@@ -13,7 +13,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 @Reusable
-class GithubAppJwtFactory(
+internal class GithubAppJwtFactory(
     private val appId: String,
     privateKeyPem: ByteArray
 ) {

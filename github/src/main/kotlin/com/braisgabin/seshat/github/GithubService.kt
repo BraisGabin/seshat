@@ -4,7 +4,7 @@ import com.braisgabin.seshat.entities.Side
 import com.braisgabin.seshat.entities.Suggestion
 import javax.inject.Inject
 
-class GithubService @Inject internal constructor(
+internal class GithubService @Inject internal constructor(
     private val githubAdapter: GithubAdapter
 ) {
 

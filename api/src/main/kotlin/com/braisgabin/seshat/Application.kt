@@ -55,14 +55,12 @@ fun Application.module(testing: Boolean = false) {
             githubAppPem = environment.config.property("ktor.github.app.pem").getString()
         )
 
-    val githubService = githubComponent.githubService()
-
-    val githubAppJwtFactory = githubComponent.githubAppJwtFactory()
+    val githubUploadSuggestionsInteractor = githubComponent.githubUploadSuggestionsInteractor()
 
     routing {
         route("github") {
             post("{owner}/{repo}/pulls/{pull_number}/{commit_id}") {
-                val diff = diffParser(call.receiveChannel())
+                val suggestions = diffParser(call.receiveChannel())
 
                 val owner: String = call.parameters["owner"]!!
                 val repo: String = call.parameters["repo"]!!
@@ -72,11 +70,9 @@ fun Application.module(testing: Boolean = false) {
                 val installationId: String = jedisPool.getResource().use { jedis ->
                     jedis.get(owner.toLowerCase())
                 }
-                val oauthToken = githubService.getOauthToken(installationId, githubAppJwtFactory.create())
-                diff.forEach {
-                    githubService.createComment(owner, repo, pullNumber, commitId, it, oauthToken)
-                }
-                call.respondText(diff.toString(), contentType = ContentType.Text.Plain)
+
+                githubUploadSuggestionsInteractor.invoke(installationId, owner, repo, pullNumber, commitId, suggestions)
+                call.respondText(suggestions.toString(), contentType = ContentType.Text.Plain)
             }
         }
         route("webhook") {

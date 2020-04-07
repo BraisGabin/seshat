@@ -10,8 +10,7 @@ import javax.inject.Named
 @Component(modules = [GithubModule::class])
 interface GithubComponent {
 
-    fun githubService(): GithubService
-    fun githubAppJwtFactory(): GithubAppJwtFactory
+    fun githubUploadSuggestionsInteractor(): GithubUploadSuggestionsInteractor
 
     @Component.Factory
     interface Factory {
