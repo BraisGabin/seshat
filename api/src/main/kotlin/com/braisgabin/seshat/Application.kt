@@ -51,13 +51,13 @@ fun Application.module(testing: Boolean = false) {
     val githubComponent = DaggerGithubComponent.factory()
         .create(
             okHttpClient = OkHttpClient(),
+            githubAppId = environment.config.property("ktor.github.app.id").getString(),
             githubAppPem = environment.config.property("ktor.github.app.pem").getString()
         )
 
     val githubService = githubComponent.githubService()
 
-    val githubAppId = environment.config.property("ktor.github.app.id").getString()
-    val githubAppJwt = githubComponent.githubAppJwt()
+    val githubAppJwtFactory = githubComponent.githubAppJwtFactory()
 
     routing {
         route("github") {
@@ -72,7 +72,7 @@ fun Application.module(testing: Boolean = false) {
                 val installationId: String = jedisPool.getResource().use { jedis ->
                     jedis.get(owner.toLowerCase())
                 }
-                val oauthToken = githubService.getOauthToken(installationId, githubAppJwt.sign(githubAppId))
+                val oauthToken = githubService.getOauthToken(installationId, githubAppJwtFactory.create())
                 diff.forEach {
                     githubService.createComment(owner, repo, pullNumber, commitId, it, oauthToken)
                 }

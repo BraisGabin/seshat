@@ -2,18 +2,26 @@ package com.braisgabin.seshat.github
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import org.bouncycastle.jce.provider.BouncyCastleProvider
+import dagger.Reusable
 import java.security.KeyFactory
-import java.security.Security
 import java.security.interfaces.RSAPrivateKey
 import java.security.spec.PKCS8EncodedKeySpec
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Named
 
-
-class GithubAppJwt(privateKeyPem: ByteArray) {
-    constructor(privateKeyPemBase64: String) : this(Base64.getMimeDecoder().decode(privateKeyPemBase64))
+@Reusable
+class GithubAppJwtFactory(
+    private val appId: String,
+    privateKeyPem: ByteArray
+) {
+    @Inject
+    constructor(
+        @Named("githubAppId") appId: String,
+        @Named("githubAppPem") privateKeyPemBase64: String
+    ) : this(appId, Base64.getMimeDecoder().decode(privateKeyPemBase64))
 
     private val algorithm: Algorithm
 
@@ -24,7 +32,7 @@ class GithubAppJwt(privateKeyPem: ByteArray) {
         algorithm = Algorithm.RSA256(null, privateKey)
     }
 
-    fun sign(appId: String): String {
+    fun create(): String {
         val now = Instant.now()
         val expiration = now.plus(10, ChronoUnit.MINUTES)
         return JWT.create()

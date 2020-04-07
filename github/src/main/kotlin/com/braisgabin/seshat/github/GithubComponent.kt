@@ -11,13 +11,14 @@ import javax.inject.Named
 interface GithubComponent {
 
     fun githubService(): GithubService
-    fun githubAppJwt(): GithubAppJwt
+    fun githubAppJwtFactory(): GithubAppJwtFactory
 
     @Component.Factory
     interface Factory {
 
         fun create(
             @BindsInstance okHttpClient: OkHttpClient,
+            @Named("githubAppId") @BindsInstance githubAppId: String,
             @Named("githubAppPem") @BindsInstance githubAppPem: String
         ): GithubComponent
     }
@@ -40,12 +41,6 @@ internal abstract class GithubModule {
         @Provides
         fun githubAdapterProvider(retrofit: Retrofit): GithubAdapter {
             return retrofit.create<GithubAdapter>()
-        }
-
-        @Provides
-        @Reusable
-        fun githubAppJwtProvider(@Named("githubAppPem") githubAppPem: String): GithubAppJwt {
-            return GithubAppJwt(githubAppPem)
         }
     }
 }
