@@ -1,7 +1,6 @@
 package com.braisgabin.seshat
 
 import com.braisgabin.seshat.github.DaggerGithubComponent
-import com.braisgabin.seshat.github.GithubAppJWT
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -49,11 +48,16 @@ fun Application.module(testing: Boolean = false) {
 
     val jedisPool = getPool(environment.config.property("ktor.redis.url").getString())
 
-    val githubService = DaggerGithubComponent.factory().create(OkHttpClient()).githubService()
+    val githubComponent = DaggerGithubComponent.factory()
+        .create(
+            okHttpClient = OkHttpClient(),
+            githubAppPem = environment.config.property("ktor.github.app.pem").getString()
+        )
+
+    val githubService = githubComponent.githubService()
 
     val githubAppId = environment.config.property("ktor.github.app.id").getString()
-    val githubAppPem = environment.config.property("ktor.github.app.pem").getString()
-    val simpleJWT = GithubAppJWT(githubAppPem)
+    val githubAppJwt = githubComponent.githubAppJwt()
 
     routing {
         route("github") {
@@ -68,7 +72,7 @@ fun Application.module(testing: Boolean = false) {
                 val installationId: String = jedisPool.getResource().use { jedis ->
                     jedis.get(owner.toLowerCase())
                 }
-                val oauthToken = githubService.getOauthToken(installationId, simpleJWT.sign(githubAppId))
+                val oauthToken = githubService.getOauthToken(installationId, githubAppJwt.sign(githubAppId))
                 diff.forEach {
                     githubService.createComment(owner, repo, pullNumber, commitId, it, oauthToken)
                 }

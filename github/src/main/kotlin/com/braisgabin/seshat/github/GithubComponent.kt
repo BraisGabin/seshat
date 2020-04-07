@@ -1,23 +1,25 @@
 package com.braisgabin.seshat.github
 
-import dagger.BindsInstance
-import dagger.Component
-import dagger.Module
-import dagger.Provides
+import dagger.*
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
+import javax.inject.Named
 
 @Component(modules = [GithubModule::class])
 interface GithubComponent {
 
     fun githubService(): GithubService
+    fun githubAppJwt(): GithubAppJwt
 
     @Component.Factory
     interface Factory {
 
-        fun create(@BindsInstance okHttpClient: OkHttpClient): GithubComponent
+        fun create(
+            @BindsInstance okHttpClient: OkHttpClient,
+            @Named("githubAppPem") @BindsInstance githubAppPem: String
+        ): GithubComponent
     }
 }
 
@@ -38,6 +40,12 @@ internal abstract class GithubModule {
         @Provides
         fun githubAdapterProvider(retrofit: Retrofit): GithubAdapter {
             return retrofit.create<GithubAdapter>()
+        }
+
+        @Provides
+        @Reusable
+        fun githubAppJwtProvider(@Named("githubAppPem") githubAppPem: String): GithubAppJwt {
+            return GithubAppJwt(githubAppPem)
         }
     }
 }

@@ -12,7 +12,7 @@ import java.time.temporal.ChronoUnit
 import java.util.*
 
 
-class GithubAppJWT(privateKeyPem: ByteArray) {
+class GithubAppJwt(privateKeyPem: ByteArray) {
     constructor(privateKeyPemBase64: String) : this(Base64.getMimeDecoder().decode(privateKeyPemBase64))
 
     private val algorithm: Algorithm
