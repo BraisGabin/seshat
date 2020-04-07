@@ -1,3 +1,4 @@
 rootProject.name = "seshat"
 
 include ':api'
+include ':bom'

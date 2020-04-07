@@ -10,20 +10,22 @@ application {
 }
 
 dependencies {
+    implementation platform(project(':bom'))
+    kapt platform(project(':bom'))
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "io.ktor:ktor-server-netty:$ktor_version"
-    implementation "ch.qos.logback:logback-classic:$logback_version"
-    implementation "io.ktor:ktor-server-core:$ktor_version"
-    implementation "io.reflectoring.diffparser:diffparser:1.4"
-    implementation "com.squareup.retrofit2:retrofit:2.8.1"
-    implementation "com.squareup.retrofit2:converter-moshi:2.8.1"
-    implementation "io.ktor:ktor-serialization:$ktor_version"
-    implementation "org.bouncycastle:bcprov-jdk15on:1.64"
-    implementation "com.auth0:java-jwt:3.10.2"
-    implementation "redis.clients:jedis:3.2.0"
-    implementation "com.squareup.moshi:moshi-kotlin:1.9.2"
-    kapt "com.squareup.moshi:moshi-kotlin-codegen:1.9.2"
-    implementation platform("com.squareup.okhttp3:okhttp-bom:4.4.1")
+    implementation "io.ktor:ktor-server-netty"
+    implementation "ch.qos.logback:logback-classic"
+    implementation "io.ktor:ktor-server-core"
+    implementation "io.reflectoring.diffparser:diffparser"
+    implementation "com.squareup.retrofit2:retrofit"
+    implementation "com.squareup.retrofit2:converter-moshi"
+    implementation "io.ktor:ktor-serialization"
+    implementation "org.bouncycastle:bcprov-jdk15on"
+    implementation "com.auth0:java-jwt"
+    implementation "redis.clients:jedis"
+    implementation "com.squareup.moshi:moshi-kotlin"
+    kapt "com.squareup.moshi:moshi-kotlin-codegen"
     implementation "com.squareup.okhttp3:logging-interceptor"
-    testImplementation "io.ktor:ktor-server-tests:$ktor_version"
+    testImplementation "io.ktor:ktor-server-tests"
 }
