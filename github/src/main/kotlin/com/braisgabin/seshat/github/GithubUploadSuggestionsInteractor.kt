@@ -16,7 +16,12 @@ class GithubUploadSuggestionsInteractor @Inject internal constructor(
         commitId: String,
         suggestions: List<Suggestion>
     ) {
-        val oauthToken = githubService.getOauthToken(installationId, githubAppJwtFactory.create())
+        val oauthToken = githubService.getOauthToken(
+            installationId,
+            githubAppJwtFactory.create(),
+            "pull_requests" to "write"
+        )
+
         suggestions.forEach {
             githubService.createComment(owner, repo, pullNumber, commitId, it, oauthToken)
         }

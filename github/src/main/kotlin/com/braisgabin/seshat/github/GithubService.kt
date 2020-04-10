@@ -26,9 +26,10 @@ internal class GithubService @Inject internal constructor(
 
     suspend fun getOauthToken(
         installationId: String,
-        jwt: String
+        jwt: String,
+        vararg permissions: Pair<String, String>
     ): String {
-        val body = InstallationOauthRequest(permissions = mapOf("pull_requests" to "write"))
+        val body = InstallationOauthRequest(permissions = permissions.toMap())
         return githubAdapter.getInstallationOauth("Bearer $jwt", installationId, body).body()!!.token
     }
 }
