@@ -1,7 +1,5 @@
 package com.braisgabin.seshat
 
-import com.braisgabin.seshat.entities.Position
-import com.braisgabin.seshat.entities.Side
 import com.braisgabin.seshat.entities.Suggestion
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.jvm.javaio.toInputStream
@@ -28,8 +26,8 @@ fun diffParser(channel: ByteReadChannel): List<Suggestion> {
                 .joinToString("\n") { line -> line.content }
             Suggestion(
                 path = path,
-                start = Position(Side.RIGHT, start + first),
-                end = Position(Side.RIGHT, start + last),
+                startLine = start + first,
+                endLine =  start + last,
                 code = "$body\n"
             )
         }

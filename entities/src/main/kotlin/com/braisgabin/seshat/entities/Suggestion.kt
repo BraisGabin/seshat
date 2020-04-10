@@ -2,14 +2,7 @@ package com.braisgabin.seshat.entities
 
 data class Suggestion(
     val path: String,
-    val start: Position,
-    val end: Position,
+    val startLine: Int,
+    val endLine: Int,
     val code: String
 )
-
-data class Position(
-    val side: Side,
-    val line: Int
-)
-
-enum class Side { LEFT, RIGHT }

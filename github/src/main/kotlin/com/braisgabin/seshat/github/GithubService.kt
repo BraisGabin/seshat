@@ -1,6 +1,5 @@
 package com.braisgabin.seshat.github
 
-import com.braisgabin.seshat.entities.Side
 import com.braisgabin.seshat.entities.Suggestion
 import javax.inject.Inject
 
@@ -39,16 +38,9 @@ private fun Suggestion.toData(commitId: String): PrCommentBody {
         body = "```suggestion\n$code```",
         commitId = commitId,
         path = path,
-        startSide = if (start == end) null else start.side.toData(),
-        startLine = if (start == end) null else start.line,
-        side = end.side.toData(),
-        line = end.line
+        startSide = if (startLine == endLine) null else "RIGHT",
+        startLine = if (startLine == endLine) null else startLine,
+        side = "RIGHT",
+        line = endLine
     )
-}
-
-private fun Side.toData(): String {
-    return when (this) {
-        Side.RIGHT -> "RIGHT"
-        Side.LEFT -> "LEFT"
-    }
 }
