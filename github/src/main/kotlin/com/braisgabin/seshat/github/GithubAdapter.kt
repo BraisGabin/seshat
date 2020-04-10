@@ -38,6 +38,14 @@ internal interface GithubAdapter {
         @Header("Authorization") authorization: String,
         @Url url: String
     ): Response<List<CommentResponse>>
+
+    @DELETE("repos/{owner}/{repo}/pulls/comments/{comment_id}")
+    suspend fun removeComment(
+        @Header("Authorization") authorization: String,
+        @Path("owner") owner: String,
+        @Path("repo") repo: String,
+        @Path("comment_id") commentId: Long
+    ): Response<List<CommentResponse>>
 }
 
 @JsonClass(generateAdapter = true)

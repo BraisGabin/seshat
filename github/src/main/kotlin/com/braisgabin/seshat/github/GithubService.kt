@@ -55,6 +55,20 @@ internal class GithubService @Inject internal constructor(
         return ids
     }
 
+    suspend fun removeComment(
+        owner: String,
+        repo: String,
+        commentId: Long,
+        oauthToken: String
+    ): Boolean {
+        return githubAdapter.removeComment(
+            authorization = "token $oauthToken",
+            owner = owner,
+            repo = repo,
+            commentId = commentId
+        ).isSuccessful
+    }
+
     private fun parse(response: Response<List<CommentResponse>>, commenter: String): Pair<List<Long>, String?> {
         val ids = response.body()!!
             .asSequence()
