@@ -8,6 +8,7 @@ import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.request.header
 import io.ktor.request.path
 import io.ktor.request.receive
 import io.ktor.request.receiveChannel
@@ -77,9 +78,19 @@ fun Application.module(testing: Boolean = false) {
         }
         route("webhook") {
             post("github") {
-                val installation = call.receive<InstallationEvent>().installation
-                installationStorage[installation.account.login] = installation.id.toString()
-                call.respond(HttpStatusCode.NoContent, "")
+                when (val eventName = call.request.header("X-GitHub-Event")!!) {
+                    "integration_installation_repositories",
+                    "installation_repositories" -> {
+                        val event = call.receive<InstallationEvent>()
+                        installationStorage[event.installation.account.login] = event.installation.id.toString()
+                    }
+                    "pull_request" -> {
+                        val event = call.receive<PullRequestEvent>()
+                        installationStorage[event.repository.owner.login] = event.installation.id.toString()
+                    }
+                    else -> error("Unknown event $eventName")
+                }
+                call.respond(HttpStatusCode.Created, "")
             }
         }
     }

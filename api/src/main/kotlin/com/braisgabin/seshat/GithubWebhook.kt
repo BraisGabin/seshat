@@ -17,3 +17,19 @@ class Installation(
 class Account(
     val login: String
 )
+
+@Serializable
+class PullRequestEvent(
+    val repository: Repository,
+    val installation: InstallationId
+)
+
+@Serializable
+class Repository(
+    val owner: Account
+)
+
+@Serializable
+class InstallationId(
+    val id: Long
+)
