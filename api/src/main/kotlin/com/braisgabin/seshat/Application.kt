@@ -46,7 +46,9 @@ fun Application.module(testing: Boolean = false) {
         json(json = json)
     }
 
-    val jedisPool = getPool(environment.config.property("ktor.redis.url").getString())
+    val installationStorage = InstallationDataStorage(
+        getPool(environment.config.property("ktor.redis.url").getString())
+    )
 
     val githubComponent = DaggerGithubComponent.factory()
         .create(
@@ -67,9 +69,7 @@ fun Application.module(testing: Boolean = false) {
                 val pullNumber: String = call.parameters["pull_number"]!!
                 val commitId: String = call.parameters["commit_id"]!!
 
-                val installationId: String = jedisPool.getResource().use { jedis ->
-                    jedis.get(owner.toLowerCase())
-                }
+                val installationId: String = installationStorage[owner]
 
                 githubUploadSuggestionsInteractor.invoke(installationId, owner, repo, pullNumber, commitId, suggestions)
                 call.respondText(suggestions.toString(), contentType = ContentType.Text.Plain)
@@ -78,9 +78,7 @@ fun Application.module(testing: Boolean = false) {
         route("webhook") {
             post("github") {
                 val installation = call.receive<InstallationEvent>().installation
-                jedisPool.getResource().use { jedis ->
-                    jedis.set(installation.account.login.toLowerCase(), installation.id.toString())
-                }
+                installationStorage[installation.account.login] = installation.id.toString()
                 call.respond(HttpStatusCode.NoContent, "")
             }
         }
