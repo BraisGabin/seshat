@@ -1,6 +1,9 @@
 package com.braisgabin.seshat.github
 
-import dagger.*
+import dagger.BindsInstance
+import dagger.Component
+import dagger.Module
+import dagger.Provides
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -40,6 +43,12 @@ internal abstract class GithubModule {
         @Provides
         fun githubAdapterProvider(retrofit: Retrofit): GithubAdapter {
             return retrofit.create<GithubAdapter>()
+        }
+
+        @Provides
+        @Named("appUserName")
+        fun appUserNameProvider(): String {
+            return "seshat-style[bot]" // TODO: This should not be hardcoded
         }
     }
 }
