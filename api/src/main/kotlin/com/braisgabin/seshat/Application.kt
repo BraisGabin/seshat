@@ -6,6 +6,7 @@ import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
+import io.ktor.features.StatusPages
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.header
@@ -40,6 +41,13 @@ fun Application.module(testing: Boolean = false) {
     install(CallLogging) {
         level = Level.INFO
         filter { call -> call.request.path().startsWith("/") }
+    }
+
+    install(StatusPages) {
+        exception<Throwable> { cause ->
+            call.respond(HttpStatusCode.InternalServerError)
+            throw cause
+        }
     }
 
     val json = Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
