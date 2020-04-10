@@ -22,5 +22,6 @@ dependencies {
     implementation "org.bouncycastle:bcprov-jdk15on"
     implementation "redis.clients:jedis"
     implementation "com.squareup.okhttp3:okhttp"
+    implementation "com.squareup.okhttp3:logging-interceptor"
     testImplementation "io.ktor:ktor-server-tests"
 }
