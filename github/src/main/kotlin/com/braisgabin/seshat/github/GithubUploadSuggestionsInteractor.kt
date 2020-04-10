@@ -24,11 +24,16 @@ class GithubUploadSuggestionsInteractor @Inject internal constructor(
             "pull_requests" to "write"
         )
 
-        githubService.getCommentIdsFrom(owner, repo, pullNumber, appUserName, oauthToken)
-            .forEach { githubService.removeComment(owner, repo, it, oauthToken) }
+        val cleanSuccess = githubService.getCommentIdsFrom(owner, repo, pullNumber, appUserName, oauthToken)
+            .map { commentId -> githubService.removeComment(owner, repo, commentId, oauthToken) }
+            .all { it }
 
-        suggestions.forEach {
-            githubService.createComment(owner, repo, pullNumber, commitId, it, oauthToken)
-        }
+        check(cleanSuccess) { "Error cleaning the previous comment" }
+
+        val success = suggestions
+            .map { githubService.createComment(owner, repo, pullNumber, commitId, it, oauthToken) }
+            .all { it }
+
+        check(success) { "Error positing the suggestions" }
     }
 }
