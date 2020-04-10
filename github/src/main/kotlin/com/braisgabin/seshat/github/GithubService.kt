@@ -25,6 +25,48 @@ internal class GithubService @Inject internal constructor(
         ).isSuccessful
     }
 
+    suspend fun getCommentIdsFrom(
+        owner: String,
+        repo: String,
+        pullNumber: String,
+        commenter: String,
+        oauthToken: String
+    ): List<Long> {
+        val response = githubAdapter.getComments(
+            authorization = "token $oauthToken",
+            owner = owner,
+            repo = repo,
+            pullNumber = pullNumber
+        )
+
+        val list = mutableListOf<Long>()
+
+        var (ids, nextUrl) = parse(response, commenter)
+        list.addAll(ids)
+
+        while (nextUrl != null) {
+            githubAdapter.getComments("token $oauthToken", nextUrl)
+
+            val (ids2, nextUrl2) = parse(response, commenter)
+            list.addAll(ids2)
+            nextUrl = nextUrl2
+        }
+
+        return ids
+    }
+
+    private fun parse(response: Response<List<CommentResponse>>, commenter: String): Pair<List<Long>, String?> {
+        val ids = response.body()!!
+            .asSequence()
+            .filter { it.user.login == commenter }
+            .map { it.id }
+            .toMutableList()
+
+        val nextUrl = response.getNextUrl()
+
+        return ids to nextUrl
+    }
+
     suspend fun getOauthToken(
         installationId: String,
         jwt: String,

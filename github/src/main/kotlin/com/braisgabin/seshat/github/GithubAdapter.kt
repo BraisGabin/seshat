@@ -24,6 +24,20 @@ internal interface GithubAdapter {
         @Path("installation_id") installationId: String,
         @Body body: InstallationOauthRequest
     ): Response<AccessTokenResponse>
+
+    @GET("repos/{owner}/{repo}/pulls/{pull_number}/comments")
+    suspend fun getComments(
+        @Header("Authorization") authorization: String,
+        @Path("owner") owner: String,
+        @Path("repo") repo: String,
+        @Path("pull_number") pullNumber: String
+    ): Response<List<CommentResponse>>
+
+    @GET
+    suspend fun getComments(
+        @Header("Authorization") authorization: String,
+        @Url url: String
+    ): Response<List<CommentResponse>>
 }
 
 @JsonClass(generateAdapter = true)
@@ -45,4 +59,15 @@ internal data class PrCommentBody(
     val line: Int,
     @Json(name = "start_side") val startSide: String?,
     @Json(name = "start_line") val startLine: Int?
+)
+
+@JsonClass(generateAdapter = true)
+internal data class CommentResponse(
+    val id: Long,
+    val user: User
+)
+
+@JsonClass(generateAdapter = true)
+internal data class User(
+    val login: String
 )
