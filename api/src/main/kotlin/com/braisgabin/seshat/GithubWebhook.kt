@@ -25,6 +25,12 @@ class PullRequestEvent(
 )
 
 @Serializable
+class CheckSuitEvent(
+    val repository: Repository,
+    val installation: InstallationId
+)
+
+@Serializable
 class Repository(
     val owner: Account
 )

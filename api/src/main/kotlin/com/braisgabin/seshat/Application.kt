@@ -95,6 +95,10 @@ fun Application.module(testing: Boolean = false) {
                         val event = call.receive<PullRequestEvent>()
                         installationStorage[event.repository.owner.login] = event.installation.id.toString()
                     }
+                    "check_suite" -> {
+                        val event = call.receive<CheckSuitEvent>()
+                        installationStorage[event.repository.owner.login] = event.installation.id.toString()
+                    }
                     else -> error("Unknown event $eventName")
                 }
                 call.respond(HttpStatusCode.Created, "")
