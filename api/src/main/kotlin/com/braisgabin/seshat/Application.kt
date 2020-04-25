@@ -6,6 +6,7 @@ import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
+import io.ktor.features.DoubleReceive
 import io.ktor.features.StatusPages
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -13,6 +14,7 @@ import io.ktor.request.header
 import io.ktor.request.path
 import io.ktor.request.receive
 import io.ktor.request.receiveChannel
+import io.ktor.request.receiveStream
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.post
@@ -30,6 +32,7 @@ import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
 import java.net.URI
 import java.security.Security
+import java.security.MessageDigest.isEqual as secureEqual
 
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -39,6 +42,10 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
     Security.addProvider(BouncyCastleProvider())
+
+    install(DoubleReceive) {
+        receiveEntireContent = true
+    }
 
     install(CallLogging) {
         level = Level.INFO
@@ -61,6 +68,8 @@ fun Application.module(testing: Boolean = false) {
     val installationStorage = InstallationDataStorage(
         getPool(environment.config.property("ktor.redis.url").getString())
     )
+
+    val signatureGenerator = SignatureGenerator(environment.config.property("ktor.github.app.webhook.secret").getString())
 
     val githubComponent = DaggerGithubComponent.factory()
         .create(
@@ -95,6 +104,9 @@ fun Application.module(testing: Boolean = false) {
         }
         route("webhook") {
             post("github") {
+                val signature = checkNotNull(call.request.header("X-Hub-Signature")) { "No signature!" }
+                signatureGenerator.verify(call.receiveStream().readBytes(), signature)
+
                 when (val eventName = call.request.header("X-GitHub-Event")!!) {
                     "integration_installation_repositories",
                     "installation_repositories" -> {
@@ -115,6 +127,11 @@ fun Application.module(testing: Boolean = false) {
             }
         }
     }
+}
+
+fun SignatureGenerator.verify(payload: ByteArray, theirSignature: String) {
+    val ourSignature = create(payload)
+    check(secureEqual(ourSignature.toByteArray(), theirSignature.toByteArray())) { "Signatures didn't match!" }
 }
 
 private fun getPool(url: String): JedisPool {
